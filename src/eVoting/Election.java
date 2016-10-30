@@ -7,7 +7,6 @@ public class Election
 	private ArrayList<Nominee> nominees;		//a list of available nominees
 	private boolean currentlyRunning;			//is the election currently active?
 	private int voteTally;						//tally of those who have voted
-	private ArrayList<Integer> registeredVoter;	//list of registered voters
 	
 	//starts the election
 	//this will cue the GUI to change and allow voters to send in their ballots
@@ -38,4 +37,22 @@ public class Election
 			return "Cannot give results, election currenlty active";
 		}
 	}
+	
+	//shows all available nominees that can be voted on
+	public void viewNominees()
+	{
+		System.out.println(nominees);		//filler text
+	}
+	
+	//vote method, allows a user to cast a ballot
+	//this method will ask for user info, create a voter object,
+	//then check that voter object against the list of registered voters
+	//if a match is found, the voter may then cast a vote for the candidate of their choice
+	//otherwise, they are asked to re-enter their information
+	public void vote()
+	{
+		System.out.println("cast a ballot");	//placeholder
+	}
+	
+	
 }
