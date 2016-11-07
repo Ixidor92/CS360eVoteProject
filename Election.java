@@ -11,7 +11,7 @@ public class Election
 	
 	public static void main(String [] args)
 	{
-		System.out.println("Enter a Username:\t");
+		System.out.println("Enter a ID Number:\t");
 		String username = scanner.nextLine();
 		
 		if ( 
