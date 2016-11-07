@@ -1,6 +1,7 @@
 package eVoting;
 
 import java.util.ArrayList;
+inport java.util.Scanner;
 
 public class Election 
 {
