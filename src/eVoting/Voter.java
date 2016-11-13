@@ -3,9 +3,7 @@ package eVoting;
 public class Voter 
 {
 	private String name;	//name of the voter
-	private int voterID;	//voterID of the voter
-	private int ssn;		//social security number of the voter
-	private String affiliation;	//political affiliation of the voter
+	private String voterID;	//voterID of the voter
 	
 	//constructor
 	//takes a given name, ID, and ssn, then turns it into a voter
@@ -14,12 +12,10 @@ public class Voter
 	//inName: the given name for the voter
 	//inID: the voterID for the given voter
 	//inSocial: the social security number for the given voter
-	public Voter(String inName, int inID, int inSocial, String politics)
+	public Voter(String inName, String inID)
 	{
 		this.name = inName;
 		this.voterID = inID;
-		this.ssn = inSocial;
-		this.affiliation = politics;
 	}
 	
 	//method castVote
@@ -37,19 +33,9 @@ public class Voter
 	}
 	
 	//gives the voterID of the voter
-	public int getID()
+	public String getID()
 	{
 		return this.voterID;
 	}
 	
-	//gives the social security number of the voter
-	public int getSsn()
-	{
-		return this.ssn;
-	}
-	
-	public String getAffiliation()
-	{
-		return this.affiliation;
-	}
 }

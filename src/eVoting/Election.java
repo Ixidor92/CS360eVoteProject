@@ -1,10 +1,7 @@
 package eVoting;
 
-import java.util.ArrayList;
-
 public class Election 
 {
-	private ArrayList<Nominee> nominees;		//a list of available nominees
 	private boolean currentlyRunning;			//is the election currently active?
 	private int voteTally;						//tally of those who have voted
 	
@@ -41,7 +38,7 @@ public class Election
 	//shows all available nominees that can be voted on
 	public void viewNominees()
 	{
-		System.out.println(nominees);		//filler text
+		System.out.println("not finished");		//filler text
 	}
 	
 	//vote method, allows a user to cast a ballot
