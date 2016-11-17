@@ -1,6 +1,6 @@
 package eVoting;
 
-import java.sql.ResultSet;
+//import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Tester 
@@ -25,15 +25,14 @@ public class Tester
 		SqlConnector test = new SqlConnector(userName, password, server, port, DB);
 		try
 		{
-			ResultSet voters = test.getData("SELECT * FROM registeredvoters;");
-			while(voters.next())
-			{
-				System.out.println("Voter: " + voters.getString(2) + " " + voters.getString(3));
-			}
+			int id = 9001;
+			Voter testVoter = new Voter("Son", "Goku", id, test);
+			testVoter.vote();
 		}
 		catch(SQLException e)
 		{
 			System.out.println("faulty SQL Command");
+			System.out.println(e);
 		}
 	}
 }

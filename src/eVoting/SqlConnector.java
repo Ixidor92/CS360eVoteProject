@@ -51,4 +51,21 @@ public class SqlConnector
 		//return the data found from the given query 
 		return data;
 	}
+	
+	public void editData(String update) throws SQLException
+	{
+		Connection conn = null;
+		Properties connectionProperties = new Properties();
+		connectionProperties.put("user", this.username);
+		connectionProperties.put("password", this.password);
+		
+		conn = DriverManager.getConnection("jdbc:mysql://"
+				+ this.serverName + ":" + this.portNumber + "/" + this.database,
+				connectionProperties);
+		
+		//create a sql statement from the given update query, and run it.
+		Statement stmt = null;
+		stmt = conn.createStatement();
+		stmt.executeUpdate(update);
+	}
 }
