@@ -13,14 +13,18 @@ public class Election
 	
 	public static void main(String [] args)
 	{
-		while (currentlyRunning == true)
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Voter or Member:\t");
+		String username = scanner.nextLine();
+			
+		if (username.equals("Member"))
 		{
-			System.out.println("Enter a ID Number:\t");
-			string username = scanner.nextLine();
-		
+			System.out.println("enter login:\t");
+			String identity = scanner.nextLine();
+				
 			for (int i = 0; i < members.length; i++)
 			{
-				if (username.equals(members[i].getIDNumber()))
+				if (identity.equals(members[i].getIDNumber()))
 				{
 					System.out.println("Enter a Password:\t");
 					String password = scanner.nextLine();
@@ -34,74 +38,96 @@ public class Election
 					System.out.println("You are not a Member!");
 					}
 				}
-			}
-			for (int i = 0; i < registered.length; i++)
-			{
-				if (username.equals(registered[i].getID()))
+				else
 				{
-					Voter active = new Voter();
-					active = registered[i];
-					for (int i = 0; i < voteTally.length; i++)
+					System.out.println("No such member");
+				}
+			}
+		}
+		else if (username.equals("Voter"))
+		{
+			if (currentlyRunning == false)
+			{
+				System.out.println("You cannot vote at this time!");
+			}
+			else
+			{
+				System.out.println("enter registration number:\t");
+				String reg_number = scanner.nextLine();
+				
+				
+				for (int i = 0; i < registered.length; i++)
+				{
+					if (reg_number.equals(registered[i].getID()))
 					{
-						if (active.getID().equals(voteTally[i].getID()))
+						Voter active = new Voter();
+						active = registered[i];
+						for (int i = 0; i < voteTally.length; i++)
 						{
-							System.out.println("You have already voted!");
-						}
-						else
-						{
-							float truth = 1;
-							while (truth % 2 != 0)
+							if (active.getID().equals(voteTally[i].getID()))
 							{
-								System.out.println("Enter Name:\t");
-								string name = scanner.nextLine();
-								System.out.println("Enter Social Security Number:\t");
-								string ssn = scanner.nextLine();
-						
-								if (name.equals(registered[i].getName()) && ssn.equals(registered[i].getSsn()))
-								{
-									truth += 1;
-								}	
+								System.out.println("You have already voted!");
 							}
-							float truth_2 = 1;
-							while (truth_2 % 2 != 0)
+							else
 							{
-								System.out.print("Please enter the name of the candidate you would like to vote for:\t");
-								string nominee = scanner.nextLine();
-							
-								for (int i = 0; i < nominees.length; i++)
+								float truth = 1;
+								while (truth % 2 != 0)
 								{
-									if (nominee.euqals(nominees[i].getName()))
+									System.out.println("Enter Name:\t");
+									string name = scanner.nextLine();
+									System.out.println("Enter Social Security Number:\t");
+									string ssn = scanner.nextLine();
+							
+									if (name.equals(registered[i].getName()) && ssn.equals(registered[i].getSsn()))
 									{
-										System.out.print("Would you like to submit your vote? y or n:\t");
-										string answer = scanner.nextLine();
-									
-										if (answer.equals("y"))
+										truth += 1;
+									}	
+								}
+								truth -= 1;
+								float truth_2 = 1;
+								while (truth_2 % 2 != 0)
+								{
+									System.out.print("Please enter the name of the candidate you would like to vote for:\t");
+									string nominee = scanner.nextLine();
+								
+									for (int i = 0; i < nominees.length; i++)
+									{
+										if (nominee.euqals(nominees[i].getName()))
 										{
-											active.castVote(nominee);
-											voteTally.add(active);
-											truth_2 += 1;
-										}
-										else
-										{
-											System.out.println("Cast ballot system restarting");
+											System.out.print("Would you like to submit your vote? y or n:\t");
+											string answer = scanner.nextLine();
+										
+											if (answer.equals("y"))
+											{
+												active.castVote(nominee);
+												voteTally.add(active);
+												truth_2 += 1;
+											}
+											else
+											{
+												System.out.println("Cast ballot system restarting");
+											}
 										}
 									}
 								}
+								truth_2 -= 1;
+							
 							}
 						
 						}
+
 					
 					}
-
-				
 				}
 			}
-			
 		}
-			
+		else
+		{
+			System.out.println("Did not enter voter or member");
+		}
+		}
 
-		
 	}
+		
 	
 	
-}
