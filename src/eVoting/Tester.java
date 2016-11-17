@@ -25,9 +25,11 @@ public class Tester
 		SqlConnector test = new SqlConnector(userName, password, server, port, DB);
 		try
 		{
-			int id = 9001;
-			Voter testVoter = new Voter("Son", "Goku", id, test);
-			testVoter.vote();
+			ElectorateCommittee testCommittee = new ElectorateCommittee(test);
+			int id = 1;
+			testCommittee.viewNomineeVotes(id);
+			id = 3;
+			testCommittee.viewNomineeVotes(id);
 		}
 		catch(SQLException e)
 		{
