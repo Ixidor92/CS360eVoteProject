@@ -42,15 +42,24 @@ public class ElectorateCommittee
 		}
 	}
 	
-	public boolean login() throws SQLException
+	public void viewResults() throws SQLException
+	{
+		ResultSet results = connection.getData("SELECT * FROM nominees");
+		while(results.next())
+		{
+			System.out.println("Candidate: " + results.getString("Name") +
+						" has " + results.getString("votes") + " votes currently.");
+		}
+	}
+	
+	public boolean login(Scanner input) throws SQLException
 	{
 		boolean successful = false;
-		Scanner input = new Scanner(System.in);
 		System.out.println("Please enter your username: ");	//query the user for their username
-		String username = input.nextLine();
+		String username = input.next();
 		
 		
-		String query = "SELECT * FROM members WHERE username = " + username;	//look for members with the given username 
+		String query = "SELECT * FROM members WHERE username = \"" + username + "\"";	//look for members with the given username 
 		ResultSet member = connection.getData(query);
 		if(!member.first())
 		{
@@ -63,10 +72,11 @@ public class ElectorateCommittee
 			int count = 0;
 			while(!found && count < 3)
 			{
+				//prompt the user for either their password, or 0 to return to selection screen
 				System.out.println("Please enter your password: ");	//query the user for their password
-				String pass = input.nextLine();
+				String pass = input.next();
 				
-				query = "SELECT * FROM members WHERE username = " + username + " AND password = " + pass;
+				query = "SELECT * FROM members WHERE username = \"" + username + "\" AND password = \"" + pass + "\"";
 				member = connection.getData(query);
 				if(!member.first())
 				{
@@ -81,12 +91,11 @@ public class ElectorateCommittee
 				}
 			}
 			if(count == 3)
-			{
+			{//if there have been three attempts to enter the password
 				System.out.println("You have failed to enter your login information correctly.  Please reattempt.");
 			}
 			
 		}
-		input.close();
 		return successful;
 	}
 	

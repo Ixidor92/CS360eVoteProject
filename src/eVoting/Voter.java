@@ -51,10 +51,9 @@ public class Voter
 	//if the user of that ID has already voted, then the system notes as such
 	//otherwise, the system gives a list of candidates, and 
 	//returns "true" if the voter cast a ballot, "false" otherwise
-	public boolean vote() throws SQLException
+	public boolean vote(Scanner input) throws SQLException
 	{
 		boolean successful = false;		//is the 
-		Scanner input = new Scanner(System.in);
 		
 		//print the available Nominees
 		String candQuery = "SELECT * FROM nominees";
@@ -73,32 +72,32 @@ public class Voter
 				
 		while(!done)
 		{//continue to ask the user to enter their value until they cancel or have a valid vote
-			System.out.println("/n" + "Please enter the numerical ID of the candidate you would like to vote for, enter 0 to cancel:");
-			int choice = input.nextInt();
+			System.out.println("\n" + "Please enter the numerical ID of the candidate you would like to vote for, enter 0 to cancel:");
+			String choice = input.next();
 					
-			if(choice == 0)
+			if(choice.equals("0"))
 			{//if the user entered 0, then cancel the voting process
-				System.out.println("Stopping voting process...");
+				System.out.println("Cancelling ballot...");
 				done = true;
 			}	
 			else
 			{
-				candQuery = "SELECT * FROM nominees WHERE nominees.ID = " + Integer.toString(choice);
+				candQuery = "SELECT * FROM nominees WHERE nominees.ID = " + choice;
 				//check if there is a candidate with the given ID, if not, say as such and ask again
 				candidates = connection.getData(candQuery);
 				
 				if(!candidates.first())
 				{//if the result list is empty, then there is no candidate with that ID
-					System.out.println("The value " + Integer.toString(choice) + " does not match any candidate.");
+					System.out.println("The value " + choice + " does not match any candidate.");
 				}
 				else
 				{
 					//show the user what they have selected, and ask if they wish to continue
 					System.out.println("You have selected " + candidates.getString(2) + ", representing party " + 
-						candidates.getString(3) + "./n" + "Is this your desired choice? 1 for yes, any other entry for no:");
-					int confirmation = input.nextInt();
+						candidates.getString(3) + ".\n" + "Is this your desired choice? 1 for yes, any other entry for no:");
+					String confirmation = input.next();
 					//if confirmation is Y or y, then move on.  Any other entry will be taken as no.
-					if(confirmation == 1)
+					if(confirmation.equals("1"))
 					{
 						System.out.println("Vote tallied");
 						//update the table so the voter is marked as having voted
@@ -118,7 +117,6 @@ public class Voter
 				}
 			}
 		}
-		input.close();
 		return successful;
 	}
 }
