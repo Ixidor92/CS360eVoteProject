@@ -32,29 +32,24 @@ public class Voter extends JFrame {
 	 */
 	
 		public void vote() {
-			try {
-				//create sql connection
-				String user = "root";
-				String password = "Scampers9/2";
-				String server = "localhost";
-				int port = 3306;
-				String DB = "evote";
-				
-				SqlConnector connection = new SqlConnector(user, password, server, port, DB);	//controls all sql work
-				Voter frame = new Voter(connection, 9001);
-				frame.setVisible(true);
-			} catch (Exception e) {
+			try 
+			{
+				this.setVisible(true);
+			} 
+			catch (Exception e)
+			{
 				e.printStackTrace();
+			}
 		}
-	}
+	
 
 	/**
 	 * Create the frame.
 	 */
 	public Voter(SqlConnector connection, int ID) throws SQLException
 	{
-		this.db = connection;
-		this.voterID = ID;
+		db = connection;
+		voterID = ID;
 		setTitle("Voting");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 516, 317);
