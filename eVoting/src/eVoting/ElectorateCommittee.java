@@ -42,14 +42,17 @@ public class ElectorateCommittee
 		}
 	}
 	
-	public void viewResults() throws SQLException
+	public String viewResults() throws SQLException
 	{
-		ResultSet results = connection.getData("SELECT * FROM nominees");
+		String resultString = "";
+		ResultSet results = connection.getData("SELECT * FROM evote.nominees");
 		while(results.next())
 		{
-			System.out.println("Candidate: " + results.getString("Name") +
+			resultString += "\n";
+			resultString += ("Candidate: " + results.getString("Name") +
 						" has " + results.getString("votes") + " votes currently.");
 		}
+		return resultString;
 	}
 	
 	public boolean login(Scanner input) throws SQLException
@@ -59,7 +62,7 @@ public class ElectorateCommittee
 		String username = input.next();
 		
 		
-		String query = "SELECT * FROM members WHERE username = \"" + username + "\"";	//look for members with the given username 
+		String query = "SELECT * FROM evote.members WHERE members.username = \"" + username + "\"";	//look for members with the given username 
 		ResultSet member = connection.getData(query);
 		if(!member.first())
 		{
@@ -76,7 +79,7 @@ public class ElectorateCommittee
 				System.out.println("Please enter your password: ");	//query the user for their password
 				String pass = input.next();
 				
-				query = "SELECT * FROM members WHERE username = \"" + username + "\" AND password = \"" + pass + "\"";
+				query = "SELECT * FROM evote.members WHERE members.username = \"" + username + "\" AND password = \"" + pass + "\"";
 				member = connection.getData(query);
 				if(!member.first())
 				{

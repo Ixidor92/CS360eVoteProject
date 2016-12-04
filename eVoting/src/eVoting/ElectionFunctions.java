@@ -77,7 +77,7 @@ public class ElectionFunctions
 							String first = currentUser.getString(2);
 							String last = currentUser.getString(3);
 							int userID = currentUser.getInt(1);
-							Voter registeredUser = new Voter(first, last, userID, connection);
+							VoterOutline registeredUser = new VoterOutline(first, last, userID, connection);
 							registeredUser.vote(scanner);
 						}
 					}

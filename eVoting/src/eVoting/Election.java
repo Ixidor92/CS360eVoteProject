@@ -96,7 +96,7 @@ public class Election extends JFrame {
 			public void actionPerformed(ActionEvent e) 
 			{
 				String id = JOptionPane.showInputDialog("Please enter your voter ID:");	//ask the user for their ID
-				String query = "SELECT * FROM registeredvoters where VoterID = " + id;
+				String query = "SELECT * FROM evote.registeredvoters where registeredVoters.VoterID = " + id;
 				try
 				{
 					ResultSet currentUser = db.getData(query);	//pull the user from the table of registered voters, assuming he is there
@@ -111,13 +111,9 @@ public class Election extends JFrame {
 					else
 					{//if there is a result, then there is a voter.
 						//create a voter object, and call the vote method
-						String first = currentUser.getString(2);
-						String last = currentUser.getString(3);
 						int userID = currentUser.getInt(1);
-						Voter registeredUser = new Voter(first, last, userID, db);
-						//temporary line, will be replaced when Scanner isn't used for vote
-						Scanner input = new Scanner(System.in);
-						registeredUser.vote(input);
+						Voter registeredUser = new Voter(db, userID);
+						registeredUser.vote();
 					}
 				}
 				catch(SQLException e1)
@@ -355,7 +351,8 @@ public class Election extends JFrame {
 			{
 				try 
 				{
-					electorate.viewResults();		//NOTE: this will return a boolean value and alter a given string value, prevents needing to make a new JFrame in electorateCommittee
+					String results = electorate.viewResults();		//NOTE: this will return a boolean value and alter a given string value, prevents needing to make a new JFrame in electorateCommittee
+					JOptionPane.showMessageDialog(optionPane, results);
 				} 
 				catch (SQLException e1) 
 				{

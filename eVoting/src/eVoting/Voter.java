@@ -1,114 +1,162 @@
 package eVoting;
 
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.border.EmptyBorder;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import java.awt.GridLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
+import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Scanner;
+import java.awt.event.ActionEvent;
 
-public class Voter 
-{
-	private String firstName;	//name of the voter
-	private String lastName;
-	private int voterID;	//voterID of the voter
-	private SqlConnector connection;	//the connection to the sql server
+public class Voter extends JFrame {
+
+	private JPanel contentPane;
+	private int voterID;
+	private SqlConnector db;
+
+	/**
+	 * Launch the application.
+	 */
 	
-	//constructor
-	//takes a given name, ID, and ssn, then turns it into a voter
-	//object
-	//parameters:
-	//inName: the given name for the voter
-	//inID: the voterID for the given voter
-	//registered: the SQLConnector that connects to the table of voters
-	public Voter(String first, String last, int inID, SqlConnector registered)
-	{
-		this.firstName = first;
-		this.lastName = last;
-		this.voterID = inID;
-		this.connection = registered;
-	}
-	
-	//gives the name of the voter
-	public String getName()
-	{
-		return this.firstName + " " + this.lastName;
-	}
-	
-	//gives the voterID of the voter
-	public int getID()
-	{
-		return this.voterID;
-	}
-	
-	//asks the user for their voter ID, and then proceeds with the voting process
-	//if there is no user with the ID, an error message appears
-	//if the user of that ID has already voted, then the system notes as such
-	//otherwise, the system gives a list of candidates, and 
-	//returns "true" if the voter cast a ballot, "false" otherwise
-	public boolean vote(Scanner input) throws SQLException
-	{
-		boolean successful = false;		//is the 
-		
-		//print the available Nominees
-		String candQuery = "SELECT * FROM nominees";
-		ResultSet candidates = connection.getData(candQuery);
+		public void vote() {
+			try {
+				//create sql connection
+				String user = "root";
+				String password = "Scampers9/2";
+				String server = "localhost";
+				int port = 3306;
+				String DB = "evote";
 				
-		System.out.println("List of candidates:");
-		while(candidates.next())
-		{//print out the name and id of every candidate
-			System.out.print(Integer.toString(candidates.getInt(1)));	//print out the candidate's numerical ID
-			System.out.println(" " + candidates.getString(2));
+				SqlConnector connection = new SqlConnector(user, password, server, port, DB);	//controls all sql work
+				Voter frame = new Voter(connection, 9001);
+				frame.setVisible(true);
+			} catch (Exception e) {
+				e.printStackTrace();
 		}
-				
-		//print out a blank line for clarity, followed by a prompt.
-		//current version: asks for the number ID of the candidate
-		boolean done = false;		//is the user finished?
-				
-		while(!done)
-		{//continue to ask the user to enter their value until they cancel or have a valid vote
-			System.out.println("\n" + "Please enter the numerical ID of the candidate you would like to vote for, enter 0 to cancel:");
-			String choice = input.next();
-					
-			if(choice.equals("0"))
-			{//if the user entered 0, then cancel the voting process
-				System.out.println("Cancelling ballot...");
-				done = true;
-			}	
-			else
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public Voter(SqlConnector connection, int ID) throws SQLException
+	{
+		this.db = connection;
+		this.voterID = ID;
+		setTitle("Voting");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 516, 317);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(new BorderLayout(0, 0));
+		
+		
+		//pull candidates from the database, and create a radio button for each one
+		ResultSet candidates = db.getData("SELECT * FROM evote.nominees");
+		int numberCandidates;
+		JRadioButton[] selections;
+		ButtonGroup group = new ButtonGroup();
+		int i = 0;
+
+		if(!candidates.first())
+		{//if there is no first selection, then the database is void of nominees
+			JOptionPane.showMessageDialog(contentPane, "There are no nominees in the database");
+			numberCandidates = 0;
+			selections = new JRadioButton[0];
+		}
+		else
+		{//grab the final row, which gives how many rows in total are in the resultSet
+			candidates.last();
+			numberCandidates = candidates.getRow();
+			candidates.beforeFirst();
+			selections = new JRadioButton[numberCandidates];
+			
+			
+			//after finding out how many nominees there are, create a radioButton for each one
+			//add that radio button to the same group
+			//then set an action listener using the Candidate's name
+			while(candidates.next())
 			{
-				candQuery = "SELECT * FROM nominees WHERE nominees.ID = " + choice;
-				//check if there is a candidate with the given ID, if not, say as such and ask again
-				candidates = connection.getData(candQuery);
-				
-				if(!candidates.first())
-				{//if the result list is empty, then there is no candidate with that ID
-					System.out.println("The value " + choice + " does not match any candidate.");
-				}
-				else
-				{
-					//show the user what they have selected, and ask if they wish to continue
-					System.out.println("You have selected " + candidates.getString(2) + ", representing party " + 
-						candidates.getString(3) + ".\n" + "Is this your desired choice? 1 for yes, any other entry for no:");
-					String confirmation = input.next();
-					//if confirmation is Y or y, then move on.  Any other entry will be taken as no.
-					if(confirmation.equals("1"))
-					{
-						System.out.println("Vote tallied");
-						//update the table so the voter is marked as having voted
-						String voterUpdate = "UPDATE registeredvoters SET hasVoted = 1 WHERE VoterID = " + Integer.toString(this.voterID);
-						connection.editData(voterUpdate);
-								
-						String tallyUpdate = "UPDATE nominees SET votes = (votes + 1) WHERE ID = " + choice;
-						connection.editData(tallyUpdate);
-								
-						done = true;		//the user is finished
-						successful = true;	//the vote was successfully tallied
-					}
-					else
-					{
-								System.out.println("Returning to selection");
-					}
-				}
+				selections[i] = new JRadioButton(candidates.getString(2));
+				group.add(selections[i]);	//add the button to the group
+				selections[i].setActionCommand(candidates.getString(2));
+				i++;
 			}
 		}
-		return successful;
+
+		JButton btnCancel = new JButton("cancel");
+		btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				int choice = JOptionPane.showConfirmDialog(contentPane, "Do you not want to cast a ballot?", "Please vote!", JOptionPane.YES_NO_OPTION );
+				if(choice == JOptionPane.YES_OPTION)
+				{
+					dispose();
+				}
+			}
+		});
+		contentPane.add(btnCancel, BorderLayout.EAST);
+		
+		JButton btnVote = new JButton("vote");
+		btnVote.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				//find the selection from the group, grabbing the candidate's name
+				String chosen = group.getSelection().getActionCommand();
+				//pull the chosen candidate's information from the database
+				try 
+				{
+					String query = "SELECT * FROM evote.nominees WHERE nominees.name = \"" + chosen + "\"";
+				
+					ResultSet candidate = db.getData(query);
+					candidate.first();		//CODE WILL NOT RUN WITHOUT THIS STATEMENT
+					int finalDecision = JOptionPane.showConfirmDialog(contentPane, "You have selected candidate " + candidate.getString(2) + 
+								", representing the party: " + candidate.getString(3) + "\nIs this who you wish to vote for?", "Final Choice!", JOptionPane.OK_CANCEL_OPTION);
+					if(finalDecision == JOptionPane.OK_OPTION)
+					{
+						String voterUpdate = "UPDATE registeredvoters SET hasVoted = 1 WHERE VoterID = " + Integer.toString(voterID);
+						db.editData(voterUpdate);
+								
+						String tallyUpdate = "UPDATE nominees SET votes = (votes + 1) WHERE ID = " + candidate.getInt(1);
+						db.editData(tallyUpdate);
+						
+						dispose();
+					}
+				} 
+				catch (SQLException e1) 
+				{
+					// TODO Auto-generated catch block
+					System.out.println("Error: " + e1);
+					e1.printStackTrace();
+				}
+			}
+		});
+		contentPane.add(btnVote, BorderLayout.WEST);
+
+		JLabel lblPleaseSelectThe = new JLabel("Please select the candidate you would like to vote for.");
+		contentPane.add(lblPleaseSelectThe, BorderLayout.NORTH);
+		
+		
+		JPanel candidateOptions = new JPanel();
+		candidateOptions.setLayout(new BoxLayout(candidateOptions, BoxLayout.PAGE_AXIS));
+		for(int z = 0; z < numberCandidates; z++)
+		{
+			candidateOptions.add(selections[z]);
+		}
+		contentPane.add(candidateOptions, BorderLayout.CENTER);
 	}
+
 }
