@@ -100,15 +100,19 @@ public class ElectorateCommittee
 	}
 	
 	//version of the login method that takes two string arguments (the username and password).  Meant for use with JFrame arguments
-	public boolean login(String username, String password) throws SQLException
+	//returns an integer noting any issues
+	//returning 0 means nothing went wrong
+	//returning 1 means the user was found, but the password was incorrect
+	//returning -1 means that no user was found
+	public int login(String username, String password) throws SQLException
 	{
-		boolean successful = false;
+		int result = 0;
 		
 		String query = "SELECT * FROM members WHERE username = \"" + username + "\"";	//look for members with the given username 
 		ResultSet member = connection.getData(query);
 		if(!member.first())
 		{
-			System.out.println("No member found with the given username");
+			result = -1;
 		}
 		else
 		{
@@ -116,16 +120,11 @@ public class ElectorateCommittee
 			member = connection.getData(query);
 			if(!member.first())
 			{
-				System.out.println("The password that you entered was incorrect.");
-			}
-			else
-			{
-				System.out.println("Logging in...");
-				successful = true;
+				result = 1;
 			}
 		}
 		
-		return successful;
+		return result;
 	}
 	
 	
